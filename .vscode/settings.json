@@ -1,0 +1,30 @@
+{
+    "editor.formatOnSave": false,
+    "[javascript]": {
+        "editor.formatOnSave": false
+    },
+    "[javascriptreact]": {
+        "editor.formatOnSave": false
+    },
+    "[typescript]": {
+        "editor.formatOnSave": false
+    },
+    "[typescriptreact]": {
+        "editor.formatOnSave": false
+    },
+    "[css]": {
+        "editor.formatOnSave": true
+    },
+    "eslint.validate": [ "html", "javascript", "javascriptreact"],
+    "prettier.disableLanguages": [
+        "javascript", "javascriptreact", "typescript", "typescriptreact"
+    ],
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    }
+}
