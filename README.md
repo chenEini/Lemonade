@@ -1,6 +1,6 @@
 # Lemonade Frontend Role Assignment Instructions
 
-- Download and read the [assignment instructions](https://github.com/Lemonade-Makers/frontend-v1-scaffold-js/files/5479770/Frontend.Home.Assignment.pdf).
+- Download and read the [assignment instructions](https://github.com/Lemonade-Makers/frontend-v1-scaffold-js/files/5506135/Frontend.Home.Assignment.pdf).
 
 - Fork this repo into your personal Github account (you can clone it as a private repository if you want to remain discreet).
 
