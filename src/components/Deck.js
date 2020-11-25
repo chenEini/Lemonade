@@ -1,10 +1,10 @@
-import Card from "./Card";
+import FaceDownCard from "./FaceDownCard";
 
 export default function Deck({ deck, handleDeckClick }) {
   return (
-    <div onClick={handleDeckClick}>
+    <div className={"deck"} onClick={handleDeckClick}>
       {deck.map((card, index) => (
-        <Card key={index} value={card} />
+        <FaceDownCard key={index} index={index} value={card} />
       ))}
     </div>
   );
