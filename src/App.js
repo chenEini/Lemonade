@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { generateCards, shuffle } from "./utils";
 import PlayerBoard from "./components/PlayerBoard";
 import AiBoard from "./components/AiBoard";
@@ -21,13 +21,10 @@ function getInitialState() {
     playerHand: [],
     aiChosenCard: null,
     playerChosenCard: null,
-    standoffCards: [],
   };
 }
 
 export default function LemonadeStandoff() {
-  // use this function to render the layout of the game and hold the main state of the app
-
   const [gameState, setGameState] = useState(getInitialState());
 
   const handleDeckClick = () => {
@@ -35,7 +32,7 @@ export default function LemonadeStandoff() {
       const deckSize = gameState.playerDeck.length;
 
       if (gameState.playerHand.length < 3) {
-        const card = gameState.playerDeck[deckSize - 1];
+        const card = gameState.playerDeck.slice(-1);
         setGameState({
           ...gameState,
           playerDeck: gameState.playerDeck.slice(0, deckSize - 1),
@@ -47,24 +44,78 @@ export default function LemonadeStandoff() {
 
   const handleFaceUpCardClick = (card) => {
     if (gameState.playerChosenCard === null) {
-      const standoffCards = [...gameState.standoffCards, card];
       const cardIndex = gameState.playerHand.indexOf(card);
 
       gameState.playerHand.splice(cardIndex, 1);
 
       setGameState({
         ...gameState,
-        standoffCards,
         playerHand: gameState.playerHand,
         playerChosenCard: card,
       });
     }
   };
 
+  const performAiMove = useCallback(() => {
+    if (gameState.aiChosenCard === null) {
+      const deckSize = gameState.aiDeck.length;
+
+      const cards = gameState.aiDeck.slice(-2);
+      const aiChosenCard = Math.max(...cards);
+
+      setGameState({
+        ...gameState,
+        aiDeck: gameState.aiDeck.slice(0, deckSize - 2),
+        aiHand: [Math.min(...cards)],
+        aiChosenCard,
+      });
+    }
+  }, [gameState]);
+
+  const performRound = useCallback(() => {
+    if (
+      gameState.aiChosenCard !== null &&
+      gameState.playerChosenCard !== null
+    ) {
+      let aiDeck = gameState.aiDeck;
+      let playerDeck = gameState.playerDeck;
+
+      const winningCards = [
+        ...gameState.aiHand,
+        ...gameState.playerHand,
+        gameState.aiChosenCard,
+        gameState.playerChosenCard,
+      ];
+
+      if (gameState.aiChosenCard > gameState.playerChosenCard) {
+        aiDeck = shuffle([...aiDeck, ...winningCards]);
+      } else {
+        playerDeck = shuffle([...playerDeck, ...winningCards]);
+      }
+
+      setGameState({
+        ...gameState,
+        aiDeck,
+        playerDeck,
+        aiHand: [],
+        playerHand: [],
+        aiChosenCard: null,
+        playerChosenCard: null,
+      });
+    }
+  }, [gameState]);
+
+  useEffect(() => {
+    performAiMove();
+    performRound();
+  }, [gameState, performAiMove, performRound]);
+
   return (
     <div className={"main-board"}>
       <AiBoard deck={gameState.aiDeck} hand={gameState.aiHand}></AiBoard>
-      <StandoffArea standoffCards={gameState.standoffCards}></StandoffArea>
+      <StandoffArea
+        standoffCards={[gameState.aiChosenCard, gameState.playerChosenCard]}
+      ></StandoffArea>
       <PlayerBoard
         deck={gameState.playerDeck}
         hand={gameState.playerHand}

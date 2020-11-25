@@ -3,7 +3,7 @@ export default function FaceDownCard({ index, value }) {
 
   return (
     <div className={"card face-down-card"} style={cardTransform}>
-      value:{value}
+      {value}
     </div>
   );
 }
