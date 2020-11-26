@@ -28,17 +28,18 @@ export default function LemonadeStandoff() {
   const [gameState, setGameState] = useState(getInitialState());
 
   const handleDeckClick = () => {
-    if (gameState.playerChosenCard === null) {
+    if (
+      gameState.playerChosenCard === null &&
+      gameState.playerHand.length < 3
+    ) {
       const deckSize = gameState.playerDeck.length;
+      const card = gameState.playerDeck.slice(-1);
 
-      if (gameState.playerHand.length < 3) {
-        const card = gameState.playerDeck.slice(-1);
-        setGameState({
-          ...gameState,
-          playerDeck: gameState.playerDeck.slice(0, deckSize - 1),
-          playerHand: [...gameState.playerHand, card],
-        });
-      }
+      setGameState({
+        ...gameState,
+        playerDeck: gameState.playerDeck.slice(0, deckSize - 1),
+        playerHand: [...gameState.playerHand, card],
+      });
     }
   };
 
@@ -57,18 +58,28 @@ export default function LemonadeStandoff() {
   };
 
   const performAiMove = useCallback(() => {
-    if (gameState.aiChosenCard === null) {
+    if (gameState.aiChosenCard === null && gameState.aiHand.length === 0) {
       const deckSize = gameState.aiDeck.length;
 
       const cards = gameState.aiDeck.slice(-2);
-      const aiChosenCard = Math.max(...cards);
+      const aiHand = cards.length > 1 ? [Math.min(...cards)] : [];
+      const aiChosenCard = cards.length > 0 ? Math.max(...cards) : null;
 
-      setGameState({
-        ...gameState,
-        aiDeck: gameState.aiDeck.slice(0, deckSize - 2),
-        aiHand: [Math.min(...cards)],
-        aiChosenCard,
-      });
+      setTimeout(() => {
+        setGameState((currentGameState) => ({
+          ...currentGameState,
+          aiDeck: gameState.aiDeck.slice(0, deckSize - 2),
+          aiHand: cards,
+        }));
+      }, 600);
+
+      setTimeout(() => {
+        setGameState((currentGameState) => ({
+          ...currentGameState,
+          aiHand,
+          aiChosenCard,
+        }));
+      }, 1200);
     }
   }, [gameState]);
 
@@ -88,33 +99,57 @@ export default function LemonadeStandoff() {
       ];
 
       if (gameState.aiChosenCard > gameState.playerChosenCard) {
-        aiDeck = shuffle([...aiDeck, ...winningCards]);
+        aiDeck = shuffle([...winningCards, ...aiDeck]);
       } else {
-        playerDeck = shuffle([...playerDeck, ...winningCards]);
+        playerDeck = shuffle([...winningCards, ...playerDeck]);
       }
 
-      setGameState({
-        ...gameState,
-        aiDeck,
-        playerDeck,
-        aiHand: [],
-        playerHand: [],
-        aiChosenCard: null,
-        playerChosenCard: null,
-      });
+      setTimeout(() => {
+        setGameState((currentGameState) => ({
+          ...currentGameState,
+          aiDeck,
+          playerDeck,
+          aiHand: [],
+          playerHand: [],
+          aiChosenCard: null,
+          playerChosenCard: null,
+        }));
+      }, 500);
+    }
+  }, [gameState]);
+
+  const finalizedGame = useCallback(() => {
+    if (
+      gameState.aiChosenCard === null &&
+      gameState.aiHand.length === 0 &&
+      gameState.aiDeck.length === 0
+    ) {
+      if (window.confirm("Losing is part of the game... Try again!")) {
+        window.location.reload();
+      }
+    } else if (
+      gameState.playerChosenCard === null &&
+      gameState.playerHand.length === 0 &&
+      gameState.playerDeck.length === 0
+    ) {
+      if (window.confirm("Congrats! You won!")) {
+        window.location.reload();
+      }
     }
   }, [gameState]);
 
   useEffect(() => {
+    finalizedGame();
     performAiMove();
     performRound();
-  }, [gameState, performAiMove, performRound]);
+  }, [gameState, finalizedGame, performAiMove, performRound]);
 
   return (
     <div className={"main-board"}>
       <AiBoard deck={gameState.aiDeck} hand={gameState.aiHand}></AiBoard>
       <StandoffArea
-        standoffCards={[gameState.aiChosenCard, gameState.playerChosenCard]}
+        aiCard={gameState.aiChosenCard}
+        playerCard={gameState.playerChosenCard}
       ></StandoffArea>
       <PlayerBoard
         deck={gameState.playerDeck}

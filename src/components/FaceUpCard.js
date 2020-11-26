@@ -4,7 +4,7 @@ export default function FaceUpCard({ value, handleFaceUpCardClick }) {
       className={"card face-up-card"}
       onClick={() => handleFaceUpCardClick && handleFaceUpCardClick(value)}
     >
-      {value}
+      <p>{value}</p>
     </div>
   );
 }
