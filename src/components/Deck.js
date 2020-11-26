@@ -5,7 +5,7 @@ export default function Deck({ deck, handleDeckClick }) {
     <div className={"deck"} onClick={handleDeckClick}>
       {deck.map((card, index) => {
         const style = {
-          transform: `translate(${index}px, ${index}px)`,
+          transform: `translate(${index * 1.5}px, ${index * 1.5}px)`,
           position: "absolute",
         };
 

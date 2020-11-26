@@ -71,7 +71,7 @@ export default function LemonadeStandoff() {
           aiDeck: gameState.aiDeck.slice(0, deckSize - 2),
           aiHand: cards,
         }));
-      }, 600);
+      }, 500);
 
       setTimeout(() => {
         setGameState((currentGameState) => ({
@@ -79,7 +79,7 @@ export default function LemonadeStandoff() {
           aiHand,
           aiChosenCard,
         }));
-      }, 1200);
+      }, 1000);
     }
   }, [gameState]);
 
@@ -114,7 +114,7 @@ export default function LemonadeStandoff() {
           aiChosenCard: null,
           playerChosenCard: null,
         }));
-      }, 500);
+      }, 1000);
     }
   }, [gameState]);
 
